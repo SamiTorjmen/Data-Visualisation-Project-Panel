@@ -1,0 +1,6 @@
+git config --global user.name "Your name Git"
+git config --global user.email "Your email Git"
+
+git config --global core.editor "code --wait"
+
+git config --global -e
