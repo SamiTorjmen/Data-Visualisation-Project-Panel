@@ -1,7 +1,2 @@
-.ipynb_checkpoints/Project_Notebook-checkpoint.ipynb
-dataviz_dauphine_tunis.egg-info/dependency_links.txt
-dataviz_dauphine_tunis.egg-info/PKG-INFO
-dataviz_dauphine_tunis.egg-info/requires.txt
-dataviz_dauphine_tunis.egg-info/SOURCES.txt
-dataviz_dauphine_tunis.egg-info/top_level.txt
 setup.py
+.gitignore
