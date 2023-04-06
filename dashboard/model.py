@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import StandardScaler
 
 class History:
     def __init__(self, model, X_train, y_train, X_test, y_test, y_pred, residuals):
@@ -35,6 +36,10 @@ def model_history(df, target, model):
     X = pd.get_dummies(X)
 
     X_train, X_test, y_train, y_test  = train_test_split(X, Y, test_size=0.3, random_state=123)
+
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
 
     model_instance = model()
     model_instance.fit(X_train, y_train)

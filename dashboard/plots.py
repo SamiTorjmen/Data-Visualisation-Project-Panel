@@ -10,6 +10,7 @@ import numpy as np
 import hvplot.pandas
 import holoviews as hv
 import scipy.stats as stats
+import statsmodels.api as sm
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -19,7 +20,8 @@ pn.extension('plotly')
 
 from dashboard.helpers import plotly_to_plt_colors, color_s, categarray
 
-pn.config.sizing_mode = "stretch_width"
+
+#pn.config.sizing_mode = "stretch_width"
 
 ##### Table
 
@@ -239,24 +241,23 @@ def corr_heatmap(df, numeric_features,color):
 
     return fig
 
-
 ## Q-Q Plot
-def qqplot(quali, quanti, modality, df):
+def qqplot(quali, quanti, modality, df):   
     
+   
+
     selected_data = df[quanti][df[quali] == modality]
     qq_points = stats.probplot(selected_data, fit=False)
     qq_df = pd.DataFrame({'x': qq_points[0], 'y': qq_points[1]})
-    
+
     scatter = qq_df.hvplot.scatter('x', 'y',  title="Q-Q Plot for '{}' with '{}' = '{}'".format(quanti, quali, modality))
 
     scatter.opts(line_color='black')
-    return scatter * hv.Slope.from_scatter(scatter).opts(line_color='red',line_width=1)
 
+    return scatter * hv.Slope.from_scatter(scatter).opts(line_color='red',line_width=1)
+    
 
 ## Residuals
-
-# def residual plot()
-
 
 def hist_residual(history):
 
@@ -284,17 +285,49 @@ def hist_residual(history):
 
     return fig
 
+def residual_fitted(history,root=False):
+
+    if not root:
+        residual_df = pd.DataFrame({'Predicted Values': history.y_pred, 'Residuals': history.residuals})
+        scatter = residual_df.hvplot.scatter('Predicted Values', 'Residuals')
+
+    else:
+        residual_df =  pd.DataFrame({'Predicted Values': history.y_pred, 'Root Standardized Residuals': history.residuals.apply(lambda x: np.sqrt(np.abs(x)))})
+        scatter = residual_df.hvplot.scatter('Predicted Values', 'Root Standardized Residuals')
+
+    scatter.opts(line_color='black')
+    
+    return scatter * hv.Slope.from_scatter(scatter).opts(line_color='red',line_width=1)
 
 def qqplot_residual(history):
 
-    qq_points = stats.probplot(history.residuals, fit=False)
-    qq_df = pd.DataFrame({'x': qq_points[0], 'y': qq_points[1]})
     
-    scatter = qq_df.hvplot.scatter('x', 'y',  title="Q-Q Plot of residuals for {}".format(str(history.model)))
-
+    qq_points = stats.probplot(history.residuals, fit=False)
+    qq_df = pd.DataFrame({'Theorical Quantiles': qq_points[0], 'Standardized residuals': qq_points[1]})
+    
+    scatter = qq_df.hvplot.scatter('Theorical Quantiles', 'Standardized residuals')
+    
     scatter.opts(line_color='black')
+    
     return scatter * hv.Slope.from_scatter(scatter).opts(line_color='red',line_width=1)
 
+def residual_leverage(history):
+    model = sm.regression.linear_model.OLS(history.y_train, sm.add_constant(history.X_train)).fit()
+    influence = model.get_influence()
+
+    leverage = influence.hat_matrix_diag
+    cooks_distance = influence.cooks_distance[0]
+    residuals = model.resid
+    
+    norm_cooksd = (cooks_distance - np.min(cooks_distance)) / (np.max(cooks_distance) - np.min(cooks_distance))
+
+    
+    residual_df = pd.DataFrame({'Leverage': leverage, 'Standardized residual':residuals, 'Normalized Cook\'s Distance': norm_cooksd})
+    scatter = residual_df.hvplot.scatter('Leverage', 'Standardized residual', c='Normalized Cook\'s Distance')
+    
+    scatter.opts(line_color='black')
+    
+    return scatter * hv.Slope.from_scatter(scatter).opts(line_color='red',line_width=1)
 
 
 ## Embedding plot

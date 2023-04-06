@@ -5,7 +5,8 @@ pn.extension('plotly')
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 
-pn.config.sizing_mode = "stretch_width"
+
+#pn.config.sizing_mode = 'stretch_width'
 
 
 def describe_quali_quanti(quali, quanti, df):
@@ -47,5 +48,7 @@ def evaluate_regression_model(history):
     # Create a dictionary with the results
     results = {'R2 Score': r2, 'MSE': mse, 'RMSE': rmse, 'MAE': mae}
     # Create a DataFrame from the dictionary and return it
-    eval_df = pd.DataFrame.from_dict(results, orient='index', columns=[str(history.model)])
-    return pn.widgets.Tabulator(eval_df, page_size=10)
+    column = str(history.model)
+    eval_df = pd.DataFrame.from_dict(results, orient='index', columns=[column])
+    return pn.widgets.Tabulator(eval_df, page_size=10, text_align={'id':'left',column:'left'}, header_align='center', widths={'index': '50%', str(history.model): '50%'})
+
