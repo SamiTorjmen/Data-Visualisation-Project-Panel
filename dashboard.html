@@ -1,0 +1,595 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    
+      <meta charset="utf-8">
+      <title>Student Performance in Exams</title>
+      
+      
+        
+          
+        <link rel="stylesheet" href="https://cdn.holoviz.org/panel/0.14.0/dist/bundled/datatabulator/tabulator-tables@5.3.2/dist/css/tabulator_simple.min.css" type="text/css" />
+        <link rel="stylesheet" href="https://cdn.holoviz.org/panel/0.14.0/dist/css/alerts.css" type="text/css" />
+        <link rel="stylesheet" href="https://cdn.holoviz.org/panel/0.14.0/dist/css/card.css" type="text/css" />
+        <link rel="stylesheet" href="https://cdn.holoviz.org/panel/0.14.0/dist/css/dataframe.css" type="text/css" />
+        <link rel="stylesheet" href="https://cdn.holoviz.org/panel/0.14.0/dist/css/debugger.css" type="text/css" />
+        <link rel="stylesheet" href="https://cdn.holoviz.org/panel/0.14.0/dist/css/json.css" type="text/css" />
+        <link rel="stylesheet" href="https://cdn.holoviz.org/panel/0.14.0/dist/css/loading.css" type="text/css" />
+        <link rel="stylesheet" href="https://cdn.holoviz.org/panel/0.14.0/dist/css/markdown.css" type="text/css" />
+        <link rel="stylesheet" href="https://cdn.holoviz.org/panel/0.14.0/dist/css/widgets.css" type="text/css" />
+        <style>
+            
+                    .bk.pn-loading.arc:before {
+                      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0eWxlPSJtYXJnaW46IGF1dG87IGJhY2tncm91bmQ6IG5vbmU7IGRpc3BsYXk6IGJsb2NrOyBzaGFwZS1yZW5kZXJpbmc6IGF1dG87IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQiPiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYzNjM2MzIiBzdHJva2Utd2lkdGg9IjEwIiByPSIzNSIgc3Ryb2tlLWRhc2hhcnJheT0iMTY0LjkzMzYxNDMxMzQ2NDE1IDU2Ljk3Nzg3MTQzNzgyMTM4Ij4gICAgPGFuaW1hdGVUcmFuc2Zvcm0gYXR0cmlidXRlTmFtZT0idHJhbnNmb3JtIiB0eXBlPSJyb3RhdGUiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiBkdXI9IjFzIiB2YWx1ZXM9IjAgNTAgNTA7MzYwIDUwIDUwIiBrZXlUaW1lcz0iMDsxIj48L2FuaW1hdGVUcmFuc2Zvcm0+ICA8L2NpcmNsZT48L3N2Zz4=");
+                      background-size: auto calc(min(50%, 400px));
+                    }
+                    
+        </style>
+        
+        
+          <script type="text/javascript" src="https://cdn.holoviz.org/panel/0.14.0/dist/bundled/datatabulator/tabulator-tables@5.3.2/dist/js/tabulator.js"></script><script type="text/javascript" src="https://cdn.holoviz.org/panel/0.14.0/dist/bundled/datatabulator/luxon/build/global/luxon.min.js"></script><script type="text/javascript" src="https://cdn.holoviz.org/panel/0.14.0/dist/bundled/jquery/jquery.slim.min.js"></script><script type="text/javascript" src="https://cdn.holoviz.org/panel/0.14.0/dist/bundled/plotlyplot/plotly-2.10.1.min.js"></script><script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.1.min.js"></script><script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-gl-2.4.1.min.js"></script><script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.1.min.js"></script><script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-2.4.1.min.js"></script><script type="text/javascript" src="https://cdn.holoviz.org/panel/0.14.0/dist/panel.min.js"></script><script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+        <script src="https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"></script>
+        
+      
+      
+    
+  </head>
+  
+  
+  <body class="bk pn-loading arc">
+    
+      
+        
+          
+          
+            
+              <div class="bk-root" id="f4e5fa6a-0a1f-43df-b87b-782080b039eb" data-root-id="1002"></div>
+            
+          
+            
+              <div class="bk-root" id="18fb58a2-5f17-4b6a-8bb5-701b4d512ce5" data-root-id="1004"></div>
+            
+          
+            
+              <div class="bk-root" id="c8c01220-86b3-4685-b6a1-40a64e791670" data-root-id="1006"></div>
+            
+          
+            
+              <div class="bk-root" id="435c07dd-f306-4fed-9111-ce278b5dde81" data-root-id="1007"></div>
+            
+          
+        
+      
+      
+        <script type="text/javascript">
+        async function main() {
+          let pyodide = await loadPyodide();
+          await pyodide.loadPackage("micropip");
+          await pyodide.runPythonAsync(`
+            import micropip
+            await micropip.install(['https://cdn.holoviz.org/panel/0.14.0/dist/wheels/bokeh-2.4.3-py3-none-any.whl', 'https://cdn.holoviz.org/panel/0.14.0/dist/wheels/panel-0.14.0-py3-none-any.whl', 'dashboard', 'holoviews>=1.15.1', 'holoviews>=1.15.1', 'hvplot', 'matplotlib', 'numpy', 'pandas', 'plotly', 'seaborn', 'scikit-learn', 'warnings']);
+          `);
+          code = `
+        import asyncio
+
+        from panel.io.pyodide import init_doc, write_doc
+
+        init_doc()
+
+        #!/usr/bin/env python
+        # coding: utf-8
+
+        # In[1]:
+
+
+        import warnings
+        warnings.filterwarnings('ignore')
+
+        import pandas as pd
+        import numpy as np
+        import plotly.express as px
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+
+        sns.set_style('whitegrid')
+
+        import panel as pn
+        from panel.interact import interact
+        pn.extension('plotly') # Interactive tables
+
+        import hvplot.pandas # Interactive dataframes
+
+        import holoviews as hv
+        from bokeh.events import Event
+        hv.extension('bokeh')
+
+
+        # In[2]:
+
+
+        df = pd.read_csv("data\StudentsPerformance.csv")
+        numeric_features = ['math score', 'reading score', 'writing score']
+        categoric_features = ['gender', 'race/ethnicity', 'parental level of education', 'lunch', 'test preparation course']
+        df['pass'] = df.apply(lambda row: 1 if row['math score'] >= 60 and row['reading score'] >= 60 and row['writing score'] >= 60 else 0, axis=1)
+
+
+        # In[3]:
+
+
+        from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet, LogisticRegression
+        from sklearn.neighbors import KNeighborsClassifier
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.svm import SVC
+
+        import dashboard
+        from dashboard.plots import table_plotly
+        from dashboard.plots import pie_quali 
+        from dashboard.plots import histogram_quali 
+        from dashboard.plots import boxplot_quali_quanti 
+        from dashboard.plots import scatter_quanti_quanti
+        from dashboard.plots import plotting_target_feature
+        from dashboard.plots import corr_heatmap
+        from dashboard.plots import qqplot
+        from dashboard.plots import hist_residual
+        from dashboard.plots import qqplot_residual
+        from dashboard.plots import residual_fitted
+        from dashboard.plots import residual_leverage
+        from dashboard.plots import bivar_quanti_plot
+        from dashboard.plots import cross_heatmap
+        from dashboard.plots import ols_resid_plot
+        from dashboard.plots import confusion_matrix_heatmap
+        from dashboard.plots import plot_roc
+
+
+        from dashboard.tables import describe_quali_quanti
+        from dashboard.tables import filtered_dataframe
+        from dashboard.tables import evaluate_regression_model
+        from dashboard.tables import cross_tab
+        from dashboard.tables import chi2_tab
+        from dashboard.tables import report_to_df
+
+
+        from dashboard.model import model_history
+        from dashboard.model import model_cl_history
+
+
+        # In[4]:
+
+
+        # class ThemeSwitcher(param.Parameterized):
+        #     dark_mode = param.Boolean(default=False, label="Dark Mode")
+
+        #     @param.depends("dark_mode", watch=True)
+        #     def switch_theme(self):
+        #         if self.dark_mode:
+        #             pn.config.raw_css[-1] = DARK_THEME
+        #         else:
+        #             pn.config.raw_css[-1] = LIGHT_THEME
+
+        # theme_switcher = ThemeSwitcher()
+        # dark_mode_toggle = pn.widgets.Toggle(name="Dark Mode", width=100)
+
+        # LIGHT_THEME = """
+        # body {
+        #     background-color: #ffffff;
+        #     color: #000000;
+        # }
+
+        # """
+
+        # DARK_THEME = """
+        # body {
+        #     background-color: #2c3e50;
+        #     color: #ecf0f1;
+        # }
+        # """
+
+        # pn.config.raw_css.append(LIGHT_THEME)
+
+        # def update_theme():
+        #     if dark_mode_toggle.value:
+        #         pn.config.raw_css[-1] = DARK_THEME
+        #     else:
+        #         pn.config.raw_css[-1] = LIGHT_THEME
+
+        # pn.state.add_periodic_callback(update_theme, period=500)
+
+
+        # In[5]:
+
+
+        pn.config.sizing_mode = "stretch_width"
+
+
+        reg_list = [
+            LinearRegression,
+            Ridge,
+            Lasso,
+            ElasticNet
+        ]
+
+        cl_list= [
+            LogisticRegression,
+            RandomForestClassifier,
+            KNeighborsClassifier,
+            SVC
+        ]
+
+        ##### Create widgets
+
+        ### Exploration widgets (Page 1)
+
+        # Dataset
+        checked_columns = ['lunch', 'race/ethnicity','test_preparation_course','math score','reading score','writing score','target_name']
+        checkboxes = {col: pn.widgets.Checkbox(name=col, value=True) if col in checked_columns else  pn.widgets.Checkbox(name=col, value=False) for col in df.columns}
+
+        # Histogram
+        count = pn.widgets.Select(name='feature',options=[col for col in df.columns], value='parental level of education')
+
+        # Scatter plot 
+        abscisse_scatter = pn.widgets.Select(name='x', options=numeric_features, value='reading score')
+        ordonnee_scatter = pn.widgets.Select(name='y', options=numeric_features, value='writing score')
+        dashboard_fit_line_checkbox = pn.widgets.Checkbox(name='fit line')
+
+        # Box plot
+        quanti = pn.widgets.Select(name='numeric feature', options=numeric_features)
+        quali = pn.widgets.Select(name='categorical feature', options=categoric_features, value='parental level of education')
+
+        # Target Plot
+        quali_target = pn.widgets.Select(name='categorical feature', options=categoric_features, value='parental level of education')
+
+        ### Modeling Widget (Page 2)
+
+        # Regression
+        target_widget =  pn.widgets.Select(name='target', options=numeric_features, value='writing score')
+        model_name_widget = pn.widgets.Select(name='model', options=reg_list, value=LinearRegression)
+
+
+        # Classification
+        model_name_cl_widget = pn.widgets.Select(name='classification model', options=cl_list, value=LogisticRegression)
+        color_confusion = pn.widgets.Select(name='Matrix color', options=px.colors.named_colorscales(), value='bupu')
+
+        ### Analysis Widget (Page 3)
+
+        # Quanti/Quanti
+        color1 = pn.widgets.Select(name='color', options=px.colors.named_colorscales(), value='magma')
+        quanti1_corr = pn.widgets.Select(name='x',options=numeric_features, value = 'reading score')
+        quanti2_corr = pn.widgets.Select(name='y',options=numeric_features, value = 'writing score')
+
+        # Quali/Quali
+        color2 = pn.widgets.Select(name='color', options=px.colors.named_colorscales(), value='redor')
+        quali1_cross = pn.widgets.Select(name='quali 1',options=categoric_features, value = 'parental level of education')
+        quali2_cross = pn.widgets.Select(name='quali 2',options=categoric_features, value = 'lunch')
+
+
+        # Q-Q Plot
+        quanti_qq = pn.widgets.Select(name='numeric feature', options=numeric_features)
+        quali_qq = pn.widgets.Select(name='categorical feature', options=categoric_features, value='parental level of education')
+        modality_qq = pn.widgets.Select(name='modality', options=df[quali_qq.params.args[0].value].unique().tolist())
+
+
+        def update_modality_options(event):
+            selected_quali = quali_qq.value
+            selected_modality = modality_qq.value
+            modality_qq.options = df[selected_quali].unique().tolist()
+            if selected_modality not in modality_qq.options:
+                modality_qq.value = modality_qq.options[0]
+            else:
+                modality_qq.value = selected_modality
+
+        quali_qq.param.watch(update_modality_options, 'value')
+
+
+        ##### Define reactive elements
+
+        ### Reactive elements for Exploration (Page 1)
+
+        dataset = pn.bind(filtered_dataframe, df=df, **checkboxes)
+        histogram = pn.bind(histogram_quali,quali=count,df=df)
+        scatter_plot = pn.bind(scatter_quanti_quanti, x=abscisse_scatter, y=ordonnee_scatter, df=df, checkbox=dashboard_fit_line_checkbox)
+        box_plot = pn.bind(boxplot_quali_quanti, quanti=quanti, quali=quali, df=df)
+        describe_table = pn.bind(describe_quali_quanti, quali=quali, quanti=quanti, df=df)
+        target_plot = pn.bind(plotting_target_feature, quali=quali_target,df=df)
+
+
+        ### Reactive elements for Modeling (Page 2)
+
+        # Regression
+
+        def update_reg_history(target, model):
+            return model_history(df=df, target=target, model=model)
+
+        reg_history = pn.bind(update_reg_history, target=target_widget, model=model_name_widget)
+
+        evaluate_reg_table = pn.bind(evaluate_regression_model,history=reg_history)
+        residual_fitted_plot = pn.bind(residual_fitted, history=reg_history)
+        qqplot_residual_plot = pn.bind(qqplot_residual, history=reg_history)
+        scale_location_plot = pn.bind(residual_fitted, history=reg_history, root=True)
+        residual_leverage_plot = pn.bind(residual_leverage, history=reg_history)
+
+        # Classification
+        def update_cl_history(model_cl):
+            return model_cl_history(df=df, model_cl=model_cl)
+
+        cl_classification = pn.bind(update_cl_history, model_cl=model_name_cl_widget)
+        evaluate_cl_table = pn.bind(report_to_df,classification=cl_classification)
+
+        confusion_plot = pn.bind(confusion_matrix_heatmap, classification=cl_classification,color=color_confusion)
+
+        roc = pn.bind(plot_roc, classification=cl_classification)
+
+        ### Reactive elements for Analysis (Page 3)
+        corr_plot = pn.bind(corr_heatmap, df=df, quanti1=quanti1_corr,quanti2=quanti2_corr, color=color1)
+        joint_plot = pn.bind(bivar_quanti_plot, df=df, quanti1=quanti1_corr, quanti2=quanti2_corr)
+
+        cross_table = pn.bind(cross_tab, df=df, quali1=quali1_cross, quali2=quali2_cross)
+        chi2_table = pn.bind(chi2_tab, df=df, quali1=quali1_cross, quali2=quali2_cross)
+        cross_heatmap_plot = pn.bind(cross_heatmap, df=df, quali1=quali1_cross, quali2=quali2_cross, color=color2)
+
+        box_plot2 = pn.bind(boxplot_quali_quanti, quanti=quanti_qq, quali=quali_qq, df=df)
+        qq_plot = pn.bind(qqplot, quali=quali_qq, quanti=quanti_qq, modality=modality_qq, df=df)
+        ols_plot = pn.bind(ols_resid_plot, df=df, quanti=quanti_qq, quali=quali_qq)
+
+        ##### Define Sidebar
+
+        ### Exploration Sidebar (Page 1)
+
+        # Cards
+        data_card = pn.Card(pn.Column(*checkboxes.values()), title='Data')
+        histogram_card = pn.Card(pn.Column(count), title='Histogram')
+        scatter_card = pn.Card(pn.Column(dashboard_fit_line_checkbox, abscisse_scatter, ordonnee_scatter), title='Scatter Plot')
+        box_card = pn.Card(pn.Column(quanti, quali), title='Box Plot')
+        target_card = pn.Card(pn.Column(quali_target), title='Target Plot')
+
+
+        # Sidebar 
+        exploration_sidebar = pn.Column('# Parameters\\n This section changes parameters for exploration plots',
+            data_card,
+            histogram_card,
+            scatter_card,
+            box_card,
+            target_card,
+            sizing_mode='stretch_width',
+        )
+
+        ### Modeling Sidebar (Page 2)
+
+        # Cards
+        regression_card = pn.Card(pn.Column(model_name_widget,target_widget), title='Regression',sizing_mode = "stretch_width")
+
+        classification_card = pn.Card(pn.Column(model_name_cl_widget, color_confusion), title='Classification',sizing_mode = "stretch_width")
+
+
+
+        # Sidebar 
+        modeling_sidebar = pn.Column('# Parameters\\n This section changes parameters for modeling plots',
+            regression_card,
+            classification_card,
+            sizing_mode='stretch_width'
+        )
+
+
+        ### Analysis Sidebar (Page 3)
+
+        # Cards
+        quanti_quanti_card = pn.Card(pn.Column(color1,quanti1_corr,quanti2_corr), title='Quantitative vs Quantitative')
+        quali_quali_card = pn.Card(pn.Column(color2,quali1_cross, quali2_cross), title='Qualitative vs Qualitative')
+        quali_quanti_card = pn.Card(pn.Column(quanti_qq,pn.Column(quali_qq, modality_qq)), title='Qualitative vs Quantitative')
+
+        # Sidebar 
+        analysis_sidebar = pn.Column('# Parameters\\n This section changes parameters for further analysis plots',
+            quanti_quanti_card,
+            quali_quali_card,
+            quali_quanti_card,
+            sizing_mode='stretch_width'
+        )
+
+        ##### Define Main
+
+        ### Main Exploration (Page 1)
+
+        # Cards
+        description = "This dataset contains information about the performance of students in various subjects. The data includes their scores in math, reading, and writing, as well as their gender, race/ethnicity, parental education, and whether they qualify for free/reduced lunch."
+        description_card = pn.Card(description, title='Description')
+
+        dataset_card = pn.Card(pn.Row(pn.Column('# Data ', description),
+                                      pn.Column(dataset)),
+                               title='Description')
+
+        boxplot_card = pn.Row(pn.Card(describe_table, title='Describe Table'),
+                              pn.Card(box_plot, title='Box Plot'))
+
+
+        scatter_hist_card = pn.Row(pn.Card(histogram, title='Histogram'), 
+                                  pn.Card(scatter_plot, title='Scatter Plot'))
+        target_card = pn.Card(target_plot, title='Target Plot')
+
+        # Content
+        exploration_main_content = pn.Column(
+                pn.Row(dataset_card),
+                pn.Row(scatter_hist_card),
+                pn.Row(boxplot_card),
+                pn.Row(target_card),
+                sizing_mode='stretch_width')
+
+
+        ### Main Modeling (Page 2)
+
+        # Cards
+        evaluate_table_card = pn.Card(evaluate_reg_table, title="Evaluation")
+        residual_fitted_card = pn.Card(residual_fitted_plot ,title="Residual Plot")
+        qqplot_residual_card = pn.Card(qqplot_residual_plot,title="Normal Q-Q")
+        scale_location_card = pn.Card(scale_location_plot, title="Scale Location")
+        residual_leverage_card = pn.Card(residual_leverage_plot, title="Residuals vs Leverage")
+
+        # Regroup cards
+        regression_card = pn.Card(pn.Row(evaluate_table_card),
+                                  pn.Row(residual_fitted_card,qqplot_residual_card),
+                                  pn.Row(scale_location_card,residual_leverage_card),      
+                                 title = 'Regression')
+
+        ## Classification
+
+        evaluate_cl_card = pn.Card(evaluate_cl_table, title="Evaluation Table")
+        confusion_card = pn.Card(confusion_plot, title="Confusion Matrix")
+        roc_card = pn.Card(roc, title='ROC')
+
+        classification_card = pn.Card(pn.Row(evaluate_cl_card),
+                                      pn.Row(confusion_card,roc_card),
+                                      title='Classification')
+
+
+        # Content
+        modeling_main_content = pn.Column(pn.Row(regression_card),
+                                          pn.Row(classification_card),                                  
+                                          sizing_mode='stretch_width')
+
+
+        ### Main Analysis(Page 3)
+
+        # Cards
+        corr_card = pn.Card(corr_plot, title='Person Correlation Matrix')
+        joint_card = pn.Card(joint_plot, title='Bivariate Plot')
+
+        cross_card = pn.Card(cross_table, title='Contingency Table')
+        chi2_card = pn.Card(chi2_table, title='Chi2 Test')
+        cross_heatmap_card = pn.Card(cross_heatmap_plot, title='Contingency Heatmap')
+
+        boxplot_card = pn.Card(box_plot2, title='Box Plot')
+        qq_card = pn.Card(qq_plot, title='Q-Q Plot')
+        ols_card = pn.Card(ols_plot, title='OLS Residuals')
+
+
+        quanti_quanti_card = pn.Card(pn.Row(corr_card,joint_card),
+                                     title=f'Statistic Dependency {quanti1_corr.params.args[0].value} vs {quanti2_corr.params.args[0].value} (quantitative/quantitative)')
+
+        quali_quali_card = pn.Card(pn.Row(pn.Column(cross_card,chi2_card),
+                                          cross_heatmap_card),
+                                   title=f'Statistic Dependency {quali1_cross.params.args[0].value} vs {quali2_cross.params.args[0].value} (qualitative/qualitative)')
+
+
+        quali_quanti_card = pn.Card(pn.Row(boxplot_card),
+                                    pn.Row(ols_card,qq_card),
+                                    title=f'Statistic Dependency {quali_qq.params.args[0].value} vs {quanti_qq.params.args[0].value} (qualitative/quantitative)')
+
+
+        # Content
+        analysis_main_content = pn.Column(pn.Row(quanti_quanti_card),
+                                          pn.Row(quali_quali_card),
+                                          pn.Row(quali_quanti_card), 
+                                          sizing_mode='stretch_width')
+
+
+        ##### Create Callback to change sidebar content
+
+        main_tabs = pn.Tabs(('Exploration', exploration_main_content),
+                            ('Modeling', modeling_main_content),
+                            ('Further Analysis', analysis_main_content))
+
+        def on_tab_change(event):
+
+            if event.new == 0:
+
+                exploration_sidebar.visible = True
+                modeling_sidebar.visible = False
+                analysis_sidebar.visible = False
+
+            elif event.new == 1:
+
+
+                exploration_sidebar.visible = False
+                modeling_sidebar.visible = True
+                analysis_sidebar.visible = False
+
+
+            else:
+
+                exploration_sidebar.visible = False
+                modeling_sidebar.visible = False
+                analysis_sidebar.visible = True
+
+
+        main_tabs.param.watch(on_tab_change, 'active')
+
+        ##### Layout
+
+        template = pn.template.VanillaTemplate(
+            
+            # title
+            title = "Student Performance in Exams",
+            
+            # sidebar
+            sidebar = pn.Column(exploration_sidebar, modeling_sidebar, analysis_sidebar, sizing_mode='stretch_width'),
+            
+            # main
+            main = main_tabs
+        )
+
+        #template.header.append(dark_mode_toggle)
+        ##### Show Dashboard
+
+        template.servable()
+
+
+        # In[ ]:
+
+
+
+
+
+
+        await write_doc()`
+          await pyodide.runPythonAsync(code);
+        }
+        main();
+        </script>
+        <script type="application/json" id="1177">
+          {"249b7db8-add7-4989-8498-a6a3d38b7e02":{"defs":[{"extends":null,"module":null,"name":"ReactiveHTML1","overrides":[],"properties":[]},{"extends":null,"module":null,"name":"FlexBox1","overrides":[],"properties":[{"default":"flex-start","kind":null,"name":"align_content"},{"default":"flex-start","kind":null,"name":"align_items"},{"default":"row","kind":null,"name":"flex_direction"},{"default":"wrap","kind":null,"name":"flex_wrap"},{"default":"flex-start","kind":null,"name":"justify_content"}]},{"extends":null,"module":null,"name":"GridStack1","overrides":[],"properties":[{"default":"warn","kind":null,"name":"mode"},{"default":null,"kind":null,"name":"ncols"},{"default":null,"kind":null,"name":"nrows"},{"default":true,"kind":null,"name":"allow_resize"},{"default":true,"kind":null,"name":"allow_drag"},{"default":[],"kind":null,"name":"state"}]},{"extends":null,"module":null,"name":"click1","overrides":[],"properties":[{"default":"","kind":null,"name":"terminal_output"},{"default":"","kind":null,"name":"debug_name"},{"default":0,"kind":null,"name":"clears"}]},{"extends":null,"module":null,"name":"NotificationAreaBase1","overrides":[],"properties":[{"default":"bottom-right","kind":null,"name":"position"},{"default":0,"kind":null,"name":"_clear"}]},{"extends":null,"module":null,"name":"NotificationArea1","overrides":[],"properties":[{"default":[],"kind":null,"name":"notifications"},{"default":"bottom-right","kind":null,"name":"position"},{"default":0,"kind":null,"name":"_clear"},{"default":[{"background":"#ffc107","icon":{"className":"fas fa-exclamation-triangle","color":"white","tagName":"i"},"type":"warning"},{"background":"#007bff","icon":{"className":"fas fa-info-circle","color":"white","tagName":"i"},"type":"info"}],"kind":null,"name":"types"}]},{"extends":null,"module":null,"name":"Notification","overrides":[],"properties":[{"default":null,"kind":null,"name":"background"},{"default":3000,"kind":null,"name":"duration"},{"default":null,"kind":null,"name":"icon"},{"default":"","kind":null,"name":"message"},{"default":null,"kind":null,"name":"notification_type"},{"default":false,"kind":null,"name":"_destroyed"}]},{"extends":null,"module":null,"name":"TemplateActions1","overrides":[],"properties":[{"default":0,"kind":null,"name":"open_modal"},{"default":0,"kind":null,"name":"close_modal"}]},{"extends":null,"module":null,"name":"MaterialTemplateActions1","overrides":[],"properties":[{"default":0,"kind":null,"name":"open_modal"},{"default":0,"kind":null,"name":"close_modal"}]}],"roots":{"references":[{"attributes":{"name":"location","reload":false},"id":"1002","type":"panel.models.location.Location"},{"attributes":{"css_classes":["loader","light"],"height":20,"margin":[5,10,5,10],"name":"busy_indicator","sizing_mode":"fixed","width":20},"id":"1007","type":"panel.models.markup.HTML"},{"attributes":{"name":"TemplateActions03205"},"id":"1005","type":"TemplateActions1"},{"attributes":{"height":0,"margin":[0,0,0,0],"name":"js_area","sizing_mode":"fixed","width":0},"id":"1004","type":"panel.models.markup.HTML"},{"attributes":{"data":{"id":"1005"},"margin":[0,0,0,0],"name":"actions","scripts":{"close_modal":["document.getElementById(&amp;#x27;pn-Modal&amp;#x27;).style.display = &amp;#x27;none&amp;#x27;"],"open_modal":["document.getElementById(&amp;#x27;pn-Modal&amp;#x27;).style.display = &amp;#x27;block&amp;#x27;"]},"subscribed_events":["dom_event"]},"id":"1006","type":"panel.models.reactive_html.ReactiveHTML"}],"root_ids":["1002","1004","1006","1007"]},"title":"Student Performance in Exams","version":"2.4.1"}}
+        </script>
+        <script type="text/javascript">
+          (function() {
+            const fn = function() {
+              Bokeh.safely(function() {
+                (function(root) {
+                  function embed_document(root) {
+                    
+                  const docs_json = document.getElementById('1177').textContent;
+                  const render_items = [{"docid":"249b7db8-add7-4989-8498-a6a3d38b7e02","root_ids":["1002","1004","1006","1007"],"roots":{"1002":"f4e5fa6a-0a1f-43df-b87b-782080b039eb","1004":"18fb58a2-5f17-4b6a-8bb5-701b4d512ce5","1006":"c8c01220-86b3-4685-b6a1-40a64e791670","1007":"435c07dd-f306-4fed-9111-ce278b5dde81"}}];
+                  root.Bokeh.embed.embed_items(docs_json, render_items);
+                
+                  }
+                  if (root.Bokeh !== undefined) {
+                    embed_document(root);
+                  } else {
+                    let attempts = 0;
+                    const timer = setInterval(function(root) {
+                      if (root.Bokeh !== undefined) {
+                        clearInterval(timer);
+                        embed_document(root);
+                      } else {
+                        attempts++;
+                        if (attempts > 100) {
+                          clearInterval(timer);
+                          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                        }
+                      }
+                    }, 10, root)
+                  }
+                })(window);
+              });
+            };
+            if (document.readyState != "loading") fn();
+            else document.addEventListener("DOMContentLoaded", fn);
+          })();
+        </script>
+    
+  </body>
+  
+</html>
