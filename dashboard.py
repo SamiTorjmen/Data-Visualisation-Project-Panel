@@ -1,39 +1,3 @@
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js");
-
-function sendPatch(patch, buffers, msg_id) {
-  self.postMessage({
-    type: 'patch',
-    patch: patch,
-    buffers: buffers
-  })
-}
-
-async function startApplication() {
-  console.log("Loading pyodide!");
-  self.postMessage({type: 'status', msg: 'Loading pyodide'})
-  self.pyodide = await loadPyodide();
-  self.pyodide.globals.set("sendPatch", sendPatch);
-  console.log("Loaded!");
-  await self.pyodide.loadPackage("micropip");
-  const env_spec = ['https://cdn.holoviz.org/panel/0.14.0/dist/wheels/bokeh-2.4.3-py3-none-any.whl', 'https://cdn.holoviz.org/panel/0.14.0/dist/wheels/panel-0.14.0-py3-none-any.whl', 'dashboard', 'holoviews>=1.15.1', 'holoviews>=1.15.1', 'hvplot', 'matplotlib', 'numpy', 'pandas', 'plotly', 'seaborn', 'scikit-learn', 'warnings']
-  for (const pkg of env_spec) {
-    const pkg_name = pkg.split('/').slice(-1)[0].split('-')[0]
-    self.postMessage({type: 'status', msg: `Installing ${pkg_name}`})
-    await self.pyodide.runPythonAsync(`
-      import micropip
-      await micropip.install('${pkg}');
-    `);
-  }
-  console.log("Packages loaded!");
-  self.postMessage({type: 'status', msg: 'Executing code'})
-  const code = `
-  
-import asyncio
-
-from panel.io.pyodide import init_doc, write_doc
-
-init_doc()
-
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -242,7 +206,7 @@ target_card = pn.Card(pn.Column(quali_target), title='Target Plot')
 
 
 # Sidebar 
-exploration_sidebar = pn.Column('# Parameters\\n This section changes parameters for exploration plots',
+exploration_sidebar = pn.Column('# Parameters\n This section changes parameters for exploration plots',
     data_card,
     histogram_card,
     scatter_card,
@@ -261,7 +225,7 @@ classification_card = pn.Card(pn.Column(model_name_cl_widget, color_confusion), 
 
 
 # Sidebar 
-modeling_sidebar = pn.Column('# Parameters\\n This section changes parameters for modeling plots',
+modeling_sidebar = pn.Column('# Parameters\n This section changes parameters for modeling plots',
     regression_card,
     classification_card,
     sizing_mode='stretch_width'
@@ -276,7 +240,7 @@ quali_quali_card = pn.Card(pn.Column(color2,quali1_cross, quali2_cross), title='
 quali_quanti_card = pn.Card(pn.Column(quanti_qq,pn.Column(quali_qq, modality_qq)), title='Qualitative vs Quantitative')
 
 # Sidebar 
-analysis_sidebar = pn.Column('# Parameters\\n This section changes parameters for further analysis plots',
+analysis_sidebar = pn.Column('# Parameters\n This section changes parameters for further analysis plots',
     quanti_quanti_card,
     quali_quali_card,
     quali_quanti_card,
@@ -428,47 +392,3 @@ template = pn.template.VanillaTemplate(
 ##### Show Dashboard
 
 template.servable()
-
-await write_doc()
-  `
-  const [docs_json, render_items, root_ids] = await self.pyodide.runPythonAsync(code)
-  self.postMessage({
-    type: 'render',
-    docs_json: docs_json,
-    render_items: render_items,
-    root_ids: root_ids
-  });
-}
-
-self.onmessage = async (event) => {
-  const msg = event.data
-  if (msg.type === 'rendered') {
-    self.pyodide.runPythonAsync(`
-    from panel.io.state import state
-    from panel.io.pyodide import _link_docs_worker
-
-    _link_docs_worker(state.curdoc, sendPatch, setter='js')
-    `)
-  } else if (msg.type === 'patch') {
-    self.pyodide.runPythonAsync(`
-    import json
-
-    state.curdoc.apply_json_patch(json.loads('${msg.patch}'), setter='js')
-    `)
-    self.postMessage({type: 'idle'})
-  } else if (msg.type === 'location') {
-    self.pyodide.runPythonAsync(`
-    import json
-    from panel.io.state import state
-    from panel.util import edit_readonly
-    if state.location:
-        loc_data = json.loads("""${msg.location}""")
-        with edit_readonly(state.location):
-            state.location.param.update({
-                k: v for k, v in loc_data.items() if k in state.location.param
-            })
-    `)
-  }
-}
-
-startApplication()
