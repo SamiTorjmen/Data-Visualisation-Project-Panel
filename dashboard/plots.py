@@ -11,6 +11,10 @@ import hvplot.pandas
 import holoviews as hv
 import scipy.stats as stats
 import statsmodels.api as sm
+from statsmodels.formula.api import ols
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import roc_curve, auc
+
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -212,13 +216,13 @@ def plotting_target_feature(quali, df):
     
     plt.close()
     
-    return fig
+    return pn.pane.Matplotlib(fig, sizing_mode='stretch_both')
 
 ## Heatmap
-def corr_heatmap(df, numeric_features,color):
+def corr_heatmap(df, quanti1, quanti2, color):
 
     # Calculate the correlation matrix
-    corrmat = df[numeric_features].corr(method='pearson')
+    corrmat = df[[quanti1,quanti2]].corr(method='pearson')
 
     # Create a Plotly heatmap
     fig = ff.create_annotated_heatmap(
@@ -240,6 +244,54 @@ def corr_heatmap(df, numeric_features,color):
     )
 
     return fig
+
+
+
+def bivar_quanti_plot(df, quanti1, quanti2):
+    fig = sns.jointplot(x=quanti1, y=quanti2, data=df, color='red', kind='kde').fig
+    plt.close()
+    return pn.pane.Matplotlib(fig, sizing_mode='stretch_both')
+
+def cross_heatmap(df,quali1, quali2, color):
+
+    crosstab = pd.crosstab(df[quali1], df[quali2], normalize='index')
+
+    # Create a Plotly heatmap
+    fig = ff.create_annotated_heatmap(
+        z=crosstab.values,
+        x=list(crosstab.columns),
+        y=list(crosstab.index),
+        annotation_text=crosstab.round(2).values,
+        colorscale=color,
+        zmin=0,
+        zmax=1,
+        showscale=True
+    )
+
+    # Update layout
+    fig.update_layout(
+        title='Pearson Correlation of Features',
+        xaxis=dict(side='bottom', tickangle=0),
+        yaxis=dict(autorange='reversed')
+    )
+
+    return fig
+
+def ols_resid_plot(df, quali, quanti):
+    le = LabelEncoder()
+    data = df.copy()
+    data[quali] = le.fit_transform(df[quali])
+    
+    results = ols(f"Q('{quanti}') ~ Q('{quali}')", data=data).fit()
+    residuals = results.resid
+
+    residual_df = pd.DataFrame({f'{quali}': data[quali], 'Residuals OLS': residuals})
+    scatter = residual_df.hvplot.scatter(f'{quali}', 'Residuals OLS')
+
+    scatter.opts(line_color='black')
+
+    return scatter * hv.HLine(0).opts(color='red', line_width=1)
+
 
 ## Q-Q Plot
 def qqplot(quali, quanti, modality, df):   
@@ -292,8 +344,8 @@ def residual_fitted(history,root=False):
         scatter = residual_df.hvplot.scatter('Predicted Values', 'Residuals')
 
     else:
-        residual_df =  pd.DataFrame({'Predicted Values': history.y_pred, 'Root Standardized Residuals': history.residuals.apply(lambda x: np.sqrt(np.abs(x)))})
-        scatter = residual_df.hvplot.scatter('Predicted Values', 'Root Standardized Residuals')
+        residual_df =  pd.DataFrame({'Predicted values': history.y_pred, 'Root Standardized Residuals': history.residuals.apply(lambda x: np.sqrt(np.abs(x)))})
+        scatter = residual_df.hvplot.scatter('Predicted values', 'Root Standardized Residuals')
 
     scatter.opts(line_color='black')
     
@@ -328,6 +380,77 @@ def residual_leverage(history):
     scatter.opts(line_color='black')
     
     return scatter * hv.Slope.from_scatter(scatter).opts(line_color='red',line_width=1)
+
+
+### Classification Plot
+
+# def plot_roc(classification):
+    
+#     # Calculer le taux de vrais positifs (true positive rate) et le taux de faux positifs (false positive rate)
+#     fpr, tpr, _ = roc_curve(classification.y_test_cl, classification.y_score_cl)
+    
+#     # Calculer l'aire sous la courbe ROC (AUC)
+#     roc_auc = auc(fpr, tpr)
+    
+#     # Tracer la courbe ROC
+#     fig = plt.figure()
+#     plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+#     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+#     plt.xlim([0.0, 1.0])
+#     plt.ylim([0.0, 1.05])
+#     plt.xlabel('False Positive Rate')
+#     plt.ylabel('True Positive Rate')
+#     plt.title('Receiver Operating Characteristic')
+#     plt.legend(loc="lower right")
+#     fig = pn.pane.Matplotlib(fig)
+#     fig.sizing_mode = 'scale_both'
+#     plt.close()
+#     return fig
+
+def plot_roc(classification):
+    
+    # Calculer le taux de vrais positifs (true positive rate) et le taux de faux positifs (false positive rate)
+    fpr, tpr, _ = roc_curve(classification.y_test_cl, classification.y_score_cl)
+    
+    # Calculer l'aire sous la courbe ROC (AUC)
+    roc_auc = auc(fpr, tpr)
+    
+    # Créer une courbe ROC à l'aide de hvplot
+    roc_curve_df = pd.DataFrame({'FPR': fpr, 'TPR': tpr})
+    roc_curve_plot = roc_curve_df.hvplot.line(x='FPR', y='TPR', line_color='darkorange', 
+                                           line_width=2, title=f"ROC Curve (AUC = {roc_auc:.2f})",
+                                           xlim=(0,1), ylim=(0,1))
+    roc_curve_plot *= hv.Curve([(0, 0), (1, 1)]).opts(line_color='darkblue')
+    roc_curve_plot.opts(xlabel='False Positive Rate', ylabel='True Positive Rate', show_legend=True, legend_position='bottom_right')
+    
+    return roc_curve_plot
+
+def confusion_matrix_heatmap(classification, color):
+    # Compute the confusion matrix
+    cm = pd.crosstab(
+        classification.y_test_cl, classification.y_pred_cl, normalize='index'
+    )
+
+    # Create a Plotly heatmap
+    fig = ff.create_annotated_heatmap(
+        z=cm.values,
+        x=list(cm.columns),
+        y=list(cm.index),
+        annotation_text=cm.round(2).values,
+        colorscale=color,
+        zmin=0,
+        zmax=1,
+        showscale=True
+    )
+
+    # Update layout
+    fig.update_layout(
+        title='Confusion Matrix',
+        xaxis=dict(side='bottom', tickangle=0),
+        yaxis=dict(autorange='reversed')
+    )
+
+    return fig
 
 
 ## Embedding plot

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 class History:
     def __init__(self, model, X_train, y_train, X_test, y_test, y_pred, residuals):
@@ -65,3 +66,57 @@ def df_reg(df):
     df_copy.drop(['math score', 'reading score', 'writing score','gender__female','lunch__free/reduced','pass','target_name'], axis=1,inplace=True)
     return df_copy
     
+
+# Classification
+
+class Classification:
+    def __init__(self, model_cl, X_train_cl, y_train_cl, X_test_cl, y_test_cl, y_pred_cl, y_score_cl,classes):
+        self.model_cl = model_cl
+        self.X_train_cl = X_train_cl 
+        self.y_train_cl = y_train_cl
+        self.X_test_cl = X_test_cl
+        self.y_test_cl = y_test_cl
+        self.y_pred_cl = y_pred_cl
+        self.y_score_cl = y_score_cl
+        self.classes = classes
+        
+    def to_dict(self):
+        return {
+            'X_train': self.X_train_cl,
+            'y_train': self.y_train_cl,
+            'X_test': self.X_test_cl,
+            'y_test': self.y_test_cl,
+            'model': self.model_cl,
+            'y_pred': self.y_pred_cl,
+            'y_score':self.y_score_cl,
+            'classes': self.classes
+        }
+    
+def model_cl_history(df, model_cl):
+
+    Y = df['pass']
+    
+    columns_to_drop = ['pass', 'target_name', 'id','math score','reading score','writing score']
+    columns_to_drop = [col for col in columns_to_drop if col in df.columns]
+
+    X = df.drop(columns_to_drop, axis=1)
+    
+    X = pd.get_dummies(X)
+
+    X_train_cl, X_test_cl, y_train_cl, y_test_cl  = train_test_split(X, Y, test_size=0.15, random_state=42)
+
+    if model_cl == SVC:
+        model_instance = model_cl(probability=True)
+
+    else:
+        model_instance = model_cl()
+        
+    model_instance.fit(X_train_cl, y_train_cl)
+
+    y_pred_cl = model_instance.predict(X_test_cl)
+    y_score_cl = model_instance.predict_proba(X_test_cl)[:,1]
+
+    classes = np.unique(Y)
+
+    classification = Classification(str(model_instance)[:-2], X_train_cl, y_train_cl, X_test_cl, y_test_cl, y_pred_cl,y_score_cl, classes)
+    return classification
