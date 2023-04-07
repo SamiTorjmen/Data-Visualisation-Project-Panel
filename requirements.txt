@@ -33,7 +33,7 @@ defusedxml==0.7.1
 exceptiongroup==1.1.1
 executing==1.2.0
 fastjsonschema==2.16.3
-Flask==1.1.2
+Flask==2.2.3
 folium==0.14.0
 fonttools==4.39.0
 fqdn==1.5.1
@@ -78,7 +78,7 @@ locket==1.0.0
 logzero==1.7.0
 lxml==4.9.2
 Markdown==3.4.1
-MarkupSafe==2.0.1
+MarkupSafe==2.1.2
 matplotlib==3.7.1
 matplotlib-inline==0.1.6
 mistune==2.0.5
@@ -94,7 +94,7 @@ notebook_shim==0.2.2
 numerize==0.12
 numpy==1.24.2
 packaging==23.0
-pandas==1.5.3
+pandas==2.0.0
 pandasql==0.7.3
 pandocfilters==1.5.0
 panel==0.14.0
@@ -155,6 +155,7 @@ tqdm==4.65.0
 traitlets==5.9.0
 txt2tags==3.8
 typing-extensions==3.10.0.2
+tzdata==2023.3
 umap==0.1.1
 uri-template==1.2.0
 urllib3==1.26.15
@@ -163,7 +164,7 @@ wcwidth==0.2.6
 webcolors==1.12
 webencodings==0.5.1
 websocket-client==1.5.1
-Werkzeug==2.1.2
+Werkzeug==2.2.3
 widgetsnbextension==4.0.5
 xarray==2023.3.0
 xgboost==1.7.4

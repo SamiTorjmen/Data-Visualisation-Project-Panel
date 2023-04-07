@@ -5,6 +5,9 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+
 import seaborn as sns
 
 sns.set_style('whitegrid')
@@ -18,6 +21,9 @@ import hvplot.pandas # Interactive dataframes
 import holoviews as hv
 from bokeh.events import Event
 hv.extension('bokeh')
+
+import os
+os.environ['BOKEH_ALLOW_WS_ORIGIN'] = 'localhost:5006'
 
 df = pd.read_csv("data\StudentsPerformance.csv")
 numeric_features = ['math score', 'reading score', 'writing score']
@@ -392,3 +398,32 @@ template = pn.template.VanillaTemplate(
 ##### Show Dashboard
 
 template.servable()
+
+from flask import Flask, render_template_string
+from bokeh.embed import server_document
+import subprocess
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    script = server_document("http://localhost:5006/dashboard")
+    return render_template_string("""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <title>Dashboard</title>
+        </head>
+        <body>
+            {{ script|safe }}
+        </body>
+        </html>
+    """, script=script)
+
+if __name__ == '__main__':
+    # Start a Bokeh server to serve your Panel dashboard
+    subprocess.Popen(["panel", "serve", "dashboard.py", "--allow-websocket-origin=127.0.0.1:5000", "--address", "127.0.0.1", "--port", "5006"])
+
+    # Run your Flask app
+    app.run()
