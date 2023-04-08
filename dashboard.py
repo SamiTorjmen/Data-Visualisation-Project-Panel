@@ -1,3 +1,6 @@
+from flask import Flask, render_template_string
+app = Flask(__name__)
+
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -25,7 +28,6 @@ hv.extension('bokeh')
 import os
 os.environ['BOKEH_ALLOW_WS_ORIGIN'] = 'localhost:5006'
 
-from flask import Flask, render_template_string
 from bokeh.embed import server_document
 import subprocess
 
@@ -402,9 +404,6 @@ template = pn.template.VanillaTemplate(
 ##### Show Dashboard
 
 template.servable()
-
-
-app = Flask(__name__)
 
 @app.route('/')
 def index():
