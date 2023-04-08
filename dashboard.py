@@ -25,6 +25,10 @@ hv.extension('bokeh')
 import os
 os.environ['BOKEH_ALLOW_WS_ORIGIN'] = 'localhost:5006'
 
+from flask import Flask, render_template_string
+from bokeh.embed import server_document
+import subprocess
+
 df = pd.read_csv("data\StudentsPerformance.csv")
 numeric_features = ['math score', 'reading score', 'writing score']
 categoric_features = ['gender', 'race/ethnicity', 'parental level of education', 'lunch', 'test preparation course']
@@ -399,9 +403,6 @@ template = pn.template.VanillaTemplate(
 
 template.servable()
 
-from flask import Flask, render_template_string
-from bokeh.embed import server_document
-import subprocess
 
 app = Flask(__name__)
 
