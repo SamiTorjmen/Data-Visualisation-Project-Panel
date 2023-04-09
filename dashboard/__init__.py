@@ -9,6 +9,3 @@ from dashboard.plots import plotting_target_feature
 from dashboard.helpers import plotly_to_plt_colors
 from dashboard.helpers import color_s
 from dashboard.helpers import categarray
-
-
-
