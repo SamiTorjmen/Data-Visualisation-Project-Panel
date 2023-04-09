@@ -71,7 +71,7 @@ import holoviews as hv
 from bokeh.events import Event
 hv.extension('bokeh')
 
-df = pd.read_csv("https://github.com/SamiTorjmen/Data-Visualisation-Project-Panel/blob/master/data/StudentsPerformance.csv")
+df = pd.read_csv("data/StudentsPerformance.csv")
 numeric_features = ['math score', 'reading score', 'writing score']
 categoric_features = ['gender', 'race/ethnicity', 'parental level of education', 'lunch', 'test preparation course']
 df['pass'] = df.apply(lambda row: 1 if row['math score'] >= 60 and row['reading score'] >= 60 and row['writing score'] >= 60 else 0, axis=1)
