@@ -1,5 +1,4 @@
 backcall==0.2.0
-#git+https://github.com/SamiTorjmen/Data-Visualisation-Project-Panel@master#egg=dashboard;subdirectory=dashboard
 bleach==6.0.0
 bokeh==2.4.3
 certifi==2022.12.7
