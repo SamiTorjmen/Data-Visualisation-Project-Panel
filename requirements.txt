@@ -1,4 +1,4 @@
-git+https://github.com/SamiTorjmen/Data-Visualisation-Project-Panel/tree/master/dashboard
+git+https://github.com/SamiTorjmen/Data-Visualisation-Project-Panel/tree/master/dashboard#egg=dashboard
 backcall==0.2.0
 bleach==6.0.0
 bokeh==2.4.3
