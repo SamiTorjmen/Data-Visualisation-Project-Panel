@@ -1,6 +1,3 @@
-from flask import Flask, render_template_string
-app = Flask(__name__)
-
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -24,12 +21,6 @@ import hvplot.pandas # Interactive dataframes
 import holoviews as hv
 from bokeh.events import Event
 hv.extension('bokeh')
-
-import os
-os.environ['BOKEH_ALLOW_WS_ORIGIN'] = 'localhost:5006'
-
-from bokeh.embed import server_document
-import subprocess
 
 df = pd.read_csv("data\StudentsPerformance.csv")
 numeric_features = ['math score', 'reading score', 'writing score']
@@ -268,15 +259,15 @@ description = "This dataset contains information about the performance of studen
 description_card = pn.Card(description, title='Description')
 
 dataset_card = pn.Card(pn.Row(pn.Column('# Data ', description),
-                              pn.Column(dataset)),
-                       title='Description')
+                            pn.Column(dataset)),
+                    title='Description')
 
 boxplot_card = pn.Row(pn.Card(describe_table, title='Describe Table'),
-                      pn.Card(box_plot, title='Box Plot'))
+                    pn.Card(box_plot, title='Box Plot'))
 
 
 scatter_hist_card = pn.Row(pn.Card(histogram, title='Histogram'), 
-                          pn.Card(scatter_plot, title='Scatter Plot'))
+                        pn.Card(scatter_plot, title='Scatter Plot'))
 target_card = pn.Card(target_plot, title='Target Plot')
 
 # Content
@@ -299,9 +290,9 @@ residual_leverage_card = pn.Card(residual_leverage_plot, title="Residuals vs Lev
 
 # Regroup cards
 regression_card = pn.Card(pn.Row(evaluate_table_card),
-                          pn.Row(residual_fitted_card,qqplot_residual_card),
-                          pn.Row(scale_location_card,residual_leverage_card),      
-                         title = 'Regression')
+                        pn.Row(residual_fitted_card,qqplot_residual_card),
+                        pn.Row(scale_location_card,residual_leverage_card),      
+                        title = 'Regression')
 
 ## Classification
 
@@ -310,14 +301,14 @@ confusion_card = pn.Card(confusion_plot, title="Confusion Matrix")
 roc_card = pn.Card(roc, title='ROC')
 
 classification_card = pn.Card(pn.Row(evaluate_cl_card),
-                              pn.Row(confusion_card,roc_card),
-                              title='Classification')
+                            pn.Row(confusion_card,roc_card),
+                            title='Classification')
 
 
 # Content
 modeling_main_content = pn.Column(pn.Row(regression_card),
-                                  pn.Row(classification_card),                                  
-                                  sizing_mode='stretch_width')
+                                pn.Row(classification_card),                                  
+                                sizing_mode='stretch_width')
 
 
 ### Main Analysis(Page 3)
@@ -336,11 +327,11 @@ ols_card = pn.Card(ols_plot, title='OLS Residuals')
 
 
 quanti_quanti_card = pn.Card(pn.Row(corr_card,joint_card),
-                             title=f'Statistic Dependency {quanti1_corr.params.args[0].value} vs {quanti2_corr.params.args[0].value} (quantitative/quantitative)')
+                            title=f'Statistic Dependency {quanti1_corr.params.args[0].value} vs {quanti2_corr.params.args[0].value} (quantitative/quantitative)')
 
 quali_quali_card = pn.Card(pn.Row(pn.Column(cross_card,chi2_card),
-                                  cross_heatmap_card),
-                           title=f'Statistic Dependency {quali1_cross.params.args[0].value} vs {quali2_cross.params.args[0].value} (qualitative/qualitative)')
+                                cross_heatmap_card),
+                        title=f'Statistic Dependency {quali1_cross.params.args[0].value} vs {quali2_cross.params.args[0].value} (qualitative/qualitative)')
 
 
 quali_quanti_card = pn.Card(pn.Row(boxplot_card),
@@ -350,9 +341,9 @@ quali_quanti_card = pn.Card(pn.Row(boxplot_card),
 
 # Content
 analysis_main_content = pn.Column(pn.Row(quanti_quanti_card),
-                                  pn.Row(quali_quali_card),
-                                  pn.Row(quali_quanti_card), 
-                                  sizing_mode='stretch_width')
+                                pn.Row(quali_quali_card),
+                                pn.Row(quali_quanti_card), 
+                                sizing_mode='stretch_width')
 
 
 ##### Create Callback to change sidebar content
@@ -402,28 +393,8 @@ template = pn.template.VanillaTemplate(
 
 #template.header.append(dark_mode_toggle)
 ##### Show Dashboard
-
 template.servable()
 
-@app.route('/')
-def index():
-    script = server_document("http://localhost:5006/dashboard")
-    return render_template_string("""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="utf-8">
-            <title>Dashboard</title>
-        </head>
-        <body>
-            {{ script|safe }}
-        </body>
-        </html>
-    """, script=script)
 
-if __name__ == '__main__':
-    # Start a Bokeh server to serve your Panel dashboard
-    subprocess.Popen(["panel", "serve", "dashboard.py", "--allow-websocket-origin=127.0.0.1:5000", "--address", "127.0.0.1", "--port", "5006"])
 
-    # Run your Flask app
-    app.run()
+
