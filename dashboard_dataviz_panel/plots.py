@@ -22,7 +22,7 @@ import seaborn as sns
 import panel as pn
 pn.extension('plotly')
 
-from dashboard.helpers import plotly_to_plt_colors, color_s, categarray
+from dashboard_dataviz_panel.helpers import plotly_to_plt_colors, color_s, categarray
 
 
 #pn.config.sizing_mode = "stretch_width"
