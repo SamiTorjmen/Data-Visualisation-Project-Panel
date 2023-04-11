@@ -15,7 +15,7 @@ async function startApplication() {
   self.pyodide.globals.set("sendPatch", sendPatch);
   console.log("Loaded!");
   await self.pyodide.loadPackage("micropip");
-  await pyodide.loadPackage("scikit-learn");
+  await self.pyodide.loadPackage("scikit-learn");
   const env_spec = ['https://cdn.holoviz.org/panel/0.14.4/dist/wheels/bokeh-2.4.3-py3-none-any.whl', 'https://cdn.holoviz.org/panel/0.14.4/dist/wheels/panel-0.14.4-py3-none-any.whl', 'pyodide-http==0.1.0', 'dashboard-dataviz-panel==0.1.2', 'backcall==0.2.0', 'bleach==6.0.0', 'bokeh==2.4.3', 'certifi==2022.12.7', 'charset-normalizer==3.1.0', 'click==8.1.3', 'colorama==0.4.6', 'colorcet==3.0.1', 'cycler==0.11.0', 'debugpy==1.6.7', 'decorator==5.1.1', 'entrypoints==0.4', 'Flask==2.2.3', 'fonttools==4.38.0', 'gunicorn==20.1.0', 'holoviews==1.15.4', 'hvplot==0.8.3', 'idna==3.4', 'importlib-metadata==6.2.0', 'ipykernel==6.16.2', 'ipython==7.34.0', 'itsdangerous==2.1.2', 'jedi==0.18.2', 'Jinja2==3.1.2', 'joblib==1.2.0', 'jupyter_client==7.4.9', 'jupyter_core==4.12.0', 'kiwisolver==1.4.4', 'Markdown==3.4.3', 'MarkupSafe==2.1.2', 'matplotlib==3.5.3', 'matplotlib-inline==0.1.6', 'nest-asyncio==1.5.6', 'numpy==1.21.6', 'packaging==23.0', 'pandas==1.3.5', 'panel==0.14.4', 'param==1.13.0', 'parso==0.8.3', 'patsy==0.5.3', 'pickleshare==0.7.5', 'Pillow==9.5.0', 'plotly==5.14.1', 'prompt-toolkit==3.0.38', 'psutil==5.9.4', 'pyct==0.5.0', 'Pygments==2.14.0', 'pyparsing==3.0.9', 'python-dateutil==2.8.2', 'pytz==2023.3', 'pyviz-comms==2.2.1', 'PyYAML==6.0', 'pyzmq==25.0.2', 'requests==2.28.2', 'scikit-learn==1.0.2', 'scipy==1.7.3', 'seaborn==0.12.2', 'six==1.16.0', 'statsmodels==0.13.5', 'tenacity==8.2.2', 'threadpoolctl==3.1.0', 'tornado==6.2', 'tqdm==4.65.0', 'traitlets==5.9.0', 'typing_extensions==4.5.0', 'urllib3==1.26.15', 'wcwidth==0.2.6', 'webencodings==0.5.1', 'Werkzeug==2.2.3', 'zipp==3.15.0']
   for (const pkg of env_spec) {
     let pkg_name;
@@ -248,6 +248,35 @@ ols_plot = pn.bind(ols_resid_plot, df=df, quanti=quanti_qq, quali=quali_qq)
 
 ##### Define Sidebar
 
+#### Home Sidebar (Page 0)
+
+sidebar_desciption = pn.pane.Markdown("""
+### 🔍 Exploration Sidebar (Page 1)
+🔘 Checkboxes to select data
+
+📊 Histogram plot
+
+📈 Scatter plot
+
+📊 Box plot
+
+📊 Target plot
+
+### 🧪 Modeling Sidebar (Page 2)
+📊 Regression plot
+
+📊 Classification plot
+
+### 📊 Analysis Sidebar (Page 3)
+📈 Quantitative vs Quantitative plot
+
+📈 Qualitative vs Qualitative plot
+
+📈 Qualitative vs Quantitative plot
+""")
+home_sidebar =pn.Column(sidebar_desciption)
+
+
 ### Exploration Sidebar (Page 1)
 
 # Cards
@@ -300,15 +329,36 @@ analysis_sidebar = pn.Column('# Parameters\\n This section changes parameters fo
     sizing_mode='stretch_width'
 )
 
-##### Define Main
+### Home Page (Page 0)
+home_description = pn.pane.Markdown("""
+This dashboard allows you to explore the relationships between various factors that affect students' academic performance, including their gender, race/ethnicity, parental education, and whether they qualify for free/reduced lunch.
+
+You can navigate between the different tabs to view visualizations and analysis of the data.
+
+### 🔍 Exploration
+
+This section allows users to explore the dataset using histograms, scatter plots, box plots, and target plots. Users can customize the visualizations by selecting features and adjusting other settings through the sidebar widgets.
+
+### 🤖 Modeling
+
+This section incorporates machine learning models for regression and classification tasks. Users can select different models and target variables, and the dashboard displays evaluation metrics, residual plots, Q-Q plots, scale-location plots, leverage plots, confusion matrices, and ROC curves.
+
+### 📊 Analysis
+
+This section provides additional statistical analysis, including correlation matrices, bivariate plots, contingency tables, chi-square tests, contingency heatmaps, box plots, and OLS residuals. Users can select features and compare their relationships using the sidebar widgets.
+""")
+
+# Content
+home_main_content = pn.Column(pn.Row("# Welcome to the Student Performance Dashboard"),
+                              pn.Row(home_description))
 
 ### Main Exploration (Page 1)
 
 # Cards
-description = "This dataset contains information about the performance of students in various subjects. The data includes their scores in math, reading, and writing, as well as their gender, race/ethnicity, parental education, and whether they qualify for free/reduced lunch."
-description_card = pn.Card(description, title='Description')
+# description = "This dataset contains information about the performance of students in various subjects. The data includes their scores in math, reading, and writing, as well as their gender, race/ethnicity, parental education, and whether they qualify for free/reduced lunch."
+# description_card = pn.Card(description, title='Description')
 
-dataset_card = pn.Card(pn.Row(pn.Column('# Data ', description),
+dataset_card = pn.Card(pn.Row(#pn.Column('# Data ', description),
                             pn.Column(dataset)),
                     title='Description')
 
@@ -398,44 +448,56 @@ analysis_main_content = pn.Column(pn.Row(quanti_quanti_card),
 
 ##### Create Callback to change sidebar content
 
-main_tabs = pn.Tabs(('Exploration', exploration_main_content),
+main_tabs = pn.Tabs(('Home',home_main_content),
+                    ('Exploration', exploration_main_content),
                     ('Modeling', modeling_main_content),
                     ('Further Analysis', analysis_main_content))
 
-def on_tab_change(event):
+def on_tab_change(event): 
 
     if event.new == 0:
-
-        exploration_sidebar.visible = True
+        home_sidebar.visible = True
+        exploration_sidebar.visible = False
         modeling_sidebar.visible = False
         analysis_sidebar.visible = False
 
     elif event.new == 1:
 
-
-        exploration_sidebar.visible = False
-        modeling_sidebar.visible = True
+        home_sidebar.visible = False
+        exploration_sidebar.visible = True
+        modeling_sidebar.visible = False
         analysis_sidebar.visible = False
 
 
+    elif event.new == 2:
+
+        home_sidebar.visible=False
+        exploration_sidebar.visible = False
+        modeling_sidebar.visible = True
+        analysis_sidebar.visible = False
+    
     else:
 
+        home_sidebar.visible=False
         exploration_sidebar.visible = False
         modeling_sidebar.visible = False
         analysis_sidebar.visible = True
 
-
 main_tabs.param.watch(on_tab_change, 'active')
+
+exploration_sidebar.visible = False
+modeling_sidebar.visible = False
+analysis_sidebar.visible = False
 
 ##### Layout
 
-template = pn.template.VanillaTemplate(
+template = pn.template.FastListTemplate(
     
     # title
     title = "Student Performance in Exams",
     
     # sidebar
-    sidebar = pn.Column(exploration_sidebar, modeling_sidebar, analysis_sidebar, sizing_mode='stretch_width'),
+    sidebar = pn.Column(home_sidebar,exploration_sidebar, modeling_sidebar, analysis_sidebar, sizing_mode='stretch_width'),
     
     # main
     main = main_tabs

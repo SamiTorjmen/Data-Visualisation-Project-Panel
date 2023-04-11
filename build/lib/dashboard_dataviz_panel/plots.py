@@ -254,7 +254,7 @@ def bivar_quanti_plot(df, quanti1, quanti2):
 
 def cross_heatmap(df,quali1, quali2, color):
 
-    crosstab = pd.crosstab(df[quali1], df[quali2], normalize='index')
+    crosstab = pd.crosstab(df[quali1], df[quali2], normalize='columns')
 
     # Create a Plotly heatmap
     fig = ff.create_annotated_heatmap(
